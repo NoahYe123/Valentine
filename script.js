@@ -11,14 +11,20 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
+// ✅ Workaround for networks/VPNs that break Firestore streaming (common)
+firebase.firestore().settings({
+  experimentalForceLongPolling: true,
+  useFetchStreams: false,
+});
+
 const storage = firebase.storage();
 const db = firebase.firestore();
 
 // Debug: Check if Firebase initialized correctly
-console.log('Firebase initialized');
+console.log('Firebase initialized with long polling');
 console.log('Storage:', storage);
 console.log('Firestore:', db);
-console.log('Firestore settings:', db._settings);
 
 // DOM Elements
 const photoInput = document.getElementById('photoInput');
