@@ -60,7 +60,7 @@ function setupPhotoUpload() {
                 console.log('Saving to Firestore...');
                 const docRef = await db.collection('valentines').add({
                     photoURL: photoURL,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    createdAt: new Date().toISOString()
                 });
                 console.log('Firestore save complete! Doc ID:', docRef.id);
 
