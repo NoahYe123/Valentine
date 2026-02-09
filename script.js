@@ -41,6 +41,7 @@ function setupPhotoUpload() {
         if (file) {
             // Show loading state
             photoPreview.innerHTML = '<div class="loading">Uploading... ⏳</div>';
+            console.log('Starting upload process...');
 
             try {
                 // Upload to Firebase Storage
@@ -48,32 +49,41 @@ function setupPhotoUpload() {
                 const fileName = `valentine-photos/${timestamp}_${file.name}`;
                 const storageRef = storage.ref(fileName);
 
+                console.log('Uploading to Storage...');
                 await storageRef.put(file);
+                console.log('Storage upload complete!');
+
                 const photoURL = await storageRef.getDownloadURL();
+                console.log('Got download URL:', photoURL);
 
                 // Save to Firestore
+                console.log('Saving to Firestore...');
                 const docRef = await db.collection('valentines').add({
                     photoURL: photoURL,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
+                console.log('Firestore save complete! Doc ID:', docRef.id);
 
                 // Display the photo
                 displayPhoto(photoURL);
+                console.log('Photo displayed');
 
                 // Generate and show the unique link
                 const baseURL = window.location.origin + window.location.pathname;
                 const shareableLink = `${baseURL}?id=${docRef.id}`;
                 uniqueLink.value = shareableLink;
                 linkContainer.style.display = 'block';
+                console.log('Link generated:', shareableLink);
 
             } catch (error) {
                 console.error('Error uploading photo:', error);
+                console.error('Error details:', error.code, error.message);
                 photoPreview.innerHTML = `
                     <label for="photoInput" class="upload-label">
                         <span>❌ Upload failed. Try again.</span>
                     </label>
                 `;
-                alert('Failed to upload photo. Please check Firebase settings and try again.');
+                alert('Failed to upload photo. Error: ' + error.message);
             }
         }
     });
