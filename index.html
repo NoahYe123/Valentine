@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine? 💕</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="hearts-background">
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+    </div>
+
+    <div class="container">
+        <div class="photo-upload">
+            <input type="file" id="photoInput" accept="image/*" hidden>
+            <div id="photoPreview" class="photo-preview">
+                <label for="photoInput" class="upload-label">
+                    <span>📷 Add Photo</span>
+                </label>
+            </div>
+        </div>
+
+        <div id="linkContainer" class="link-container" style="display: none;">
+            <p>Your unique Valentine link:</p>
+            <div class="link-box">
+                <input type="text" id="uniqueLink" readonly>
+                <button id="copyBtn" class="copy-btn">Copy</button>
+            </div>
+            <p class="link-instruction">Share this link with your Valentine! 💕</p>
+        </div>
+
+        <h1>Will You Be My Valentine?</h1>
+
+        <div class="buttons">
+            <button id="acceptBtn" class="btn accept-btn">Yes! 💕</button>
+            <button id="declineBtn" class="btn decline-btn">No</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
