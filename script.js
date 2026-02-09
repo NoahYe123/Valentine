@@ -58,7 +58,7 @@ function setupPhotoUpload() {
 
                 // Save to Firestore
                 console.log('Saving to Firestore...');
-                const docRef = await db.collection('valentines').add({
+                const docRef = await db.collection('valentine2').add({
                     photoURL: photoURL,
                     createdAt: new Date().toISOString()
                 });
@@ -91,7 +91,7 @@ function setupPhotoUpload() {
 
 async function loadPhotoFromFirebase(id) {
     try {
-        const doc = await db.collection('valentines').doc(id).get();
+        const doc = await db.collection('valentine2').doc(id).get();
 
         if (doc.exists) {
             const data = doc.data();
