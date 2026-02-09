@@ -157,11 +157,14 @@ declineBtn.addEventListener('mouseover', function() {
     const containerRect = container.getBoundingClientRect();
     const btnRect = declineBtn.getBoundingClientRect();
 
-    const maxX = containerRect.width - btnRect.width - 40;
-    const maxY = containerRect.height - btnRect.height - 40;
+    // Calculate safe boundaries with padding to keep button visible
+    const padding = 20; // Minimum distance from edges
+    const maxX = Math.max(0, containerRect.width - btnRect.width - (padding * 2));
+    const maxY = Math.max(0, containerRect.height - btnRect.height - (padding * 2));
 
-    const randomX = Math.random() * maxX;
-    const randomY = Math.random() * maxY;
+    // Ensure button stays within visible bounds
+    const randomX = Math.min(maxX, Math.random() * maxX) + padding;
+    const randomY = Math.min(maxY, Math.random() * maxY) + padding;
 
     declineBtn.style.position = 'absolute';
     declineBtn.style.left = randomX + 'px';

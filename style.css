@@ -256,3 +256,56 @@ h1 {
     font-size: 18px;
     font-weight: bold;
 }
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .container {
+        padding: 30px 20px;
+        margin: 20px;
+        width: calc(100% - 40px);
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        font-size: 1em;
+        min-width: 120px;
+    }
+
+    .buttons {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .photo-preview {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 25px 15px;
+        margin: 15px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+        margin-bottom: 30px;
+    }
+
+    .btn {
+        padding: 10px 25px;
+        font-size: 0.9em;
+        min-width: 100px;
+    }
+
+    .photo-preview {
+        width: 120px;
+        height: 120px;
+    }
+}
