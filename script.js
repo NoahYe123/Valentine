@@ -35,6 +35,16 @@ const linkContainer = document.getElementById('linkContainer');
 const uniqueLink = document.getElementById('uniqueLink');
 const copyBtn = document.getElementById('copyBtn');
 
+// Timeout helper to catch Firestore hangs
+function withTimeout(promise, ms = 8000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Firestore timed out")), ms)
+        ),
+    ]);
+}
+
 // Check if there's a photo ID in the URL
 const urlParams = new URLSearchParams(window.location.search);
 const photoId = urlParams.get('id');
@@ -70,31 +80,14 @@ function setupPhotoUpload() {
 
                 // Save to Firestore
                 console.log('Saving to Firestore...');
-                console.log('Firestore db object:', db);
-                console.log('Collection name: valentine2');
-
-                try {
-                    // Create a promise with timeout
-                    const savePromise = db.collection('valentine2').add({
+                const docRef = await withTimeout(
+                    db.collection('valentine2').add({
                         photoURL: photoURL,
-                        createdAt: new Date().toISOString()
-                    });
-
-                    console.log('Firestore write initiated, waiting for response...');
-
-                    const timeoutPromise = new Promise((_, reject) => {
-                        setTimeout(() => reject(new Error('Firestore write timed out after 15 seconds')), 15000);
-                    });
-
-                    const docRef = await Promise.race([savePromise, timeoutPromise]);
-                    console.log('✅ Firestore save complete! Doc ID:', docRef.id);
-                } catch (firestoreError) {
-                    console.error('❌ Firestore write failed:', firestoreError);
-                    console.error('Error code:', firestoreError.code);
-                    console.error('Error message:', firestoreError.message);
-                    console.error('Full error:', firestoreError);
-                    throw firestoreError;
-                }
+                        createdAt: new Date().toISOString(),
+                    }),
+                    8000
+                );
+                console.log('✅ Firestore save complete! Doc ID:', docRef.id);
 
                 // Display the photo
                 displayPhoto(photoURL);
