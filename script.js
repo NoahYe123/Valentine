@@ -14,6 +14,12 @@ firebase.initializeApp(firebaseConfig);
 const storage = firebase.storage();
 const db = firebase.firestore();
 
+// Debug: Check if Firebase initialized correctly
+console.log('Firebase initialized');
+console.log('Storage:', storage);
+console.log('Firestore:', db);
+console.log('Firestore settings:', db._settings);
+
 // DOM Elements
 const photoInput = document.getElementById('photoInput');
 const photoPreview = document.getElementById('photoPreview');
@@ -58,11 +64,31 @@ function setupPhotoUpload() {
 
                 // Save to Firestore
                 console.log('Saving to Firestore...');
-                const docRef = await db.collection('valentine2').add({
-                    photoURL: photoURL,
-                    createdAt: new Date().toISOString()
-                });
-                console.log('Firestore save complete! Doc ID:', docRef.id);
+                console.log('Firestore db object:', db);
+                console.log('Collection name: valentine2');
+
+                try {
+                    // Create a promise with timeout
+                    const savePromise = db.collection('valentine2').add({
+                        photoURL: photoURL,
+                        createdAt: new Date().toISOString()
+                    });
+
+                    console.log('Firestore write initiated, waiting for response...');
+
+                    const timeoutPromise = new Promise((_, reject) => {
+                        setTimeout(() => reject(new Error('Firestore write timed out after 15 seconds')), 15000);
+                    });
+
+                    const docRef = await Promise.race([savePromise, timeoutPromise]);
+                    console.log('✅ Firestore save complete! Doc ID:', docRef.id);
+                } catch (firestoreError) {
+                    console.error('❌ Firestore write failed:', firestoreError);
+                    console.error('Error code:', firestoreError.code);
+                    console.error('Error message:', firestoreError.message);
+                    console.error('Full error:', firestoreError);
+                    throw firestoreError;
+                }
 
                 // Display the photo
                 displayPhoto(photoURL);
