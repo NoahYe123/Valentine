@@ -2,6 +2,7 @@
 const firebaseConfig = {
     apiKey: "AIzaSyCZvWlTL4ihuBt-0up-cmh8zC7wnl3vL8k",
     authDomain: "valentine-2a721.firebaseapp.com",
+    databaseURL: "https://valentine-2a721-default-rtdb.firebaseio.com",
     projectId: "valentine-2a721",
     storageBucket: "valentine-2a721.firebasestorage.app",
     messagingSenderId: "434251420880",
@@ -12,19 +13,13 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// ✅ Workaround for networks/VPNs that break Firestore streaming (common)
-firebase.firestore().settings({
-  experimentalForceLongPolling: true,
-  useFetchStreams: false,
-});
-
 const storage = firebase.storage();
-const db = firebase.firestore();
+const database = firebase.database();
 
 // Debug: Check if Firebase initialized correctly
-console.log('Firebase initialized with long polling');
+console.log('Firebase initialized with Realtime Database');
 console.log('Storage:', storage);
-console.log('Firestore:', db);
+console.log('Database:', database);
 
 // DOM Elements
 const photoInput = document.getElementById('photoInput');
@@ -78,16 +73,18 @@ function setupPhotoUpload() {
                 const photoURL = await storageRef.getDownloadURL();
                 console.log('Got download URL:', photoURL);
 
-                // Save to Firestore
-                console.log('Saving to Firestore...');
-                const docRef = await withTimeout(
-                    db.collection('valentine2').add({
+                // Save to Realtime Database
+                console.log('Saving to Realtime Database...');
+                const newRef = database.ref('valentines').push();
+                await withTimeout(
+                    newRef.set({
                         photoURL: photoURL,
                         createdAt: new Date().toISOString(),
                     }),
                     8000
                 );
-                console.log('✅ Firestore save complete! Doc ID:', docRef.id);
+                const photoId = newRef.key;
+                console.log('✅ Database save complete! ID:', photoId);
 
                 // Display the photo
                 displayPhoto(photoURL);
@@ -95,7 +92,7 @@ function setupPhotoUpload() {
 
                 // Generate and show the unique link
                 const baseURL = window.location.origin + window.location.pathname;
-                const shareableLink = `${baseURL}?id=${docRef.id}`;
+                const shareableLink = `${baseURL}?id=${photoId}`;
                 uniqueLink.value = shareableLink;
                 linkContainer.style.display = 'block';
                 console.log('Link generated:', shareableLink);
@@ -116,10 +113,10 @@ function setupPhotoUpload() {
 
 async function loadPhotoFromFirebase(id) {
     try {
-        const doc = await db.collection('valentine2').doc(id).get();
+        const snapshot = await database.ref('valentines/' + id).once('value');
 
-        if (doc.exists) {
-            const data = doc.data();
+        if (snapshot.exists()) {
+            const data = snapshot.val();
             displayPhoto(data.photoURL);
         } else {
             photoPreview.innerHTML = '<div class="error">Photo not found 😢</div>';
